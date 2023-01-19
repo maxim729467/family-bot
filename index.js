@@ -39,7 +39,7 @@ bot.on('message', async ctx => {
     const isBotMentioned = cutQuestion(msgContent).length && msgContent.startsWith(BOT_ID) && !msgContent.includes('/start');
 
     if (isReplyToBot || isBotMentioned) {
-        const question = cutQuestion(msgContent);
+        const question = isBotMentioned ? cutQuestion(msgContent) : msgContent;
         await sendQuestion(question, ctx);
     }
 })
