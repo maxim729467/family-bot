@@ -1,9 +1,8 @@
 const { Telegraf } = require('telegraf');
 require('dotenv').config();
-const { scheduleForecastSend, scheduleFarewell } = require('./methods/schedule');
 const { sendQuestion } = require('./methods/api')
 const { cutQuestion } = require('./methods/helpers')
-const { TELEGRAM_TOKEN, BOT_ID } = process.env;
+const { TELEGRAM_TOKEN } = process.env;
 
 const bot = new Telegraf(TELEGRAM_TOKEN);
 
@@ -12,19 +11,7 @@ const bot = new Telegraf(TELEGRAM_TOKEN);
     // next();
 // })
 
-bot.start(ctx => {
-    if (global.isInitiated) {
-        ctx.reply('Tasks have been already scheduled.');
-        return;
-    }
-
-    ctx.reply('Scheduling tasks...');
-    scheduleForecastSend(bot);
-    scheduleFarewell(bot);
-    global.isInitiated = true;
-});
-
-// bot.help(ctx => ctx.reply('Help command'));
+bot.help(ctx => ctx.reply('Этот бот использует OpenAI. Чтобы начать общение, напишите сообщение в чате. Приятного времяпрепровождения с незаурядным собеседником 😉'));
 // bot.settings(ctx => ctx.reply('Settings command'));
 
 // bot.on('message', ctx => {
@@ -33,12 +20,9 @@ bot.start(ctx => {
 
 bot.on('message', async ctx => {
     const { message } = ctx.update;
-    const msgContent = message.text ? message.text.toLowerCase() : '';
+    const msgContent = message.text ? message.text.trim() : '';
 
-    const isReplyToBot = message.reply_to_message && message.reply_to_message.from.is_bot;
-    const isBotMentioned = cutQuestion(msgContent).length && msgContent.startsWith(BOT_ID) && !msgContent.includes('/start');
-
-    if (isReplyToBot || isBotMentioned) {
+    if (msgContent.length && !msgContent.includes('/help')) {
         const question = cutQuestion(msgContent);
         await sendQuestion(question, ctx);
     }
