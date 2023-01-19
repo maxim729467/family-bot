@@ -2,19 +2,20 @@ const axios = require("axios");
 const moment = require('moment');
 const { Configuration, OpenAIApi } = require("openai");
 const { Translate } = require('@google-cloud/translate').v2;
+const { OPENAI_API_KEY, RAPID_API_KEY, GOOGLE_TRANSLATE_API_KEY } = process.env;
 
 const openAIConfiguration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: OPENAI_API_KEY,
 });
 
 const openai = new OpenAIApi(openAIConfiguration);
-const translator = new Translate({key: process.env.GOOGLE_TRANSLATE_API_KEY});
+const translator = new Translate({ key: GOOGLE_TRANSLATE_API_KEY });
 
 exports.getForecastData = async (city) => {
 const URL = `https://forecast9.p.rapidapi.com/rapidapi/forecast/${city}/summary/`;
 const options = {
       headers: {
-        'X-RapidAPI-Key': process.env.RAPID_API_KEY,
+        'X-RapidAPI-Key': RAPID_API_KEY,
         'X-RapidAPI-Host': 'forecast9.p.rapidapi.com'
       }
     };
