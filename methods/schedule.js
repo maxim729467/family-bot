@@ -8,7 +8,7 @@ const {
 
 exports.scheduleForecastSend = (bot) => {
     console.log('scheduling forecast');
-    cron.schedule('0 9 * * *', async () => {
+    cron.schedule('0 7 * * *', async () => {
     console.log('running scheduled task...');
 
     try {

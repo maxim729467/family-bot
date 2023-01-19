@@ -2,8 +2,10 @@ const { Telegraf } = require('telegraf');
 require('dotenv').config();
 const { scheduleForecastSend, scheduleFarewell } = require('./methods/schedule');
 const { sendQuestion } = require('./methods/api')
+const { cutQuestion } = require('./methods/helpers')
+const { TELEGRAM_TOKEN, BOT_ID } = process.env;
 
-const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
+const bot = new Telegraf(TELEGRAM_TOKEN);
 
 // bot.use((ctx, next) => {
     // console.log(ctx.update.message.text);
@@ -30,13 +32,14 @@ bot.start(ctx => {
 // })
 
 bot.on('message', async ctx => {
-    let msgContent = ctx.update.message.text || '';
-    msgContent = msgContent.toLowerCase();
-    const isReplyToBot = ctx.update.message.reply_to_message && ctx.update.message.reply_to_message.from.is_bot;
-    const isBotMentioned = msgContent.split(' ').slice(1).join(' ').trim(' ').length && msgContent.startsWith(process.env.BOT_ID) && !msgContent.includes('/start');
+    const { message } = ctx.update;
+    const msgContent = message.text ? message.text.toLowerCase() : '';
+
+    const isReplyToBot = message.reply_to_message && message.reply_to_message.from.is_bot;
+    const isBotMentioned = cutQuestion(msgContent).length && msgContent.startsWith(BOT_ID) && !msgContent.includes('/start');
 
     if (isReplyToBot || isBotMentioned) {
-        const question = msgContent.split(' ').slice(1).join(' ').trim();
+        const question = cutQuestion(msgContent);
         await sendQuestion(question, ctx);
     }
 })

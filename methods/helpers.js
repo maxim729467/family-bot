@@ -72,3 +72,5 @@ return`
 ${getRandomMessage(farewells)}
 `
 }
+
+exports.cutQuestion = (str) => str.split(' ').slice(1).join(' ').trim();
