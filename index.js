@@ -23,8 +23,7 @@ bot.on('message', async ctx => {
     const msgContent = message.text ? message.text.trim() : '';
 
     if (msgContent.length && !msgContent.includes('/help')) {
-        const question = cutQuestion(msgContent);
-        await sendQuestion(question, ctx);
+        await sendQuestion(msgContent, ctx);
     }
 })
 
