@@ -21,8 +21,6 @@ exports.getMessagesByUserId = async (userId) => {
       return [{ role: message.role, content: message.content }];
     }
 
-    console.log({ userId });
-
     const count = await db.Message.count({ where: { userId: userId } });
 
     const messages = await db.Message.findAll({

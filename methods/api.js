@@ -2,7 +2,10 @@ const axios = require("axios");
 const { OPENAI_API_KEY } = process.env;
 const { getMessagesByUserId, addMessage } = require("./dbRequests");
 
-async function sendMessage(message, userId) {
+async function sendMessage(message, userInfo = {}) {
+  const { id: userId } = userInfo;
+  console.log(userInfo);
+
   try {
     const baseUrl = "https://api.openai.com/v1/chat/completions";
     const messages = await getMessagesByUserId(userId);
@@ -36,11 +39,13 @@ async function sendMessage(message, userId) {
 }
 
 exports.sendQuestion = async (question, ctx) => {
-  const userId = ctx.update.message.from.id;
+  const userInfo = ctx.update.message.from;
+
+  console.log(ctx.update.message.from);
 
   try {
     const defaultReply = "Мне нечего сказать на это...";
-    const reply = await sendMessage(question, userId);
+    const reply = await sendMessage(question, userInfo);
     ctx.reply(reply || defaultReply);
   } catch (error) {
     console.log(error.message);
