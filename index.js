@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const { Telegraf } = require("telegraf");
 const { sendQuestion } = require("./methods/api");
+const { scheduleDeleteOldMessages } = require("./methods/schedule");
 const { TELEGRAM_TOKEN } = process.env;
 
 const app = express();
@@ -27,3 +28,5 @@ app.listen(PORT, () => {
   console.log("Launching Rayan...");
   bot.launch();
 });
+
+scheduleDeleteOldMessages();
