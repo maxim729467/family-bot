@@ -18,7 +18,7 @@ exports.getMessagesByUserId = async (userId) => {
         createdAt: new Date(),
       });
 
-      return [message];
+      return [{ role: message.role, content: message.content }];
     }
 
     console.log({ userId });
