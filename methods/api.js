@@ -41,8 +41,6 @@ async function sendMessage(message, userInfo = {}) {
 exports.sendQuestion = async (question, ctx) => {
   const userInfo = ctx.update.message.from;
 
-  console.log(ctx.update.message.from);
-
   try {
     const defaultReply = "Мне нечего сказать на это...";
     const reply = await sendMessage(question, userInfo);
