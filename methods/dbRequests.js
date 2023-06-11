@@ -27,7 +27,7 @@ exports.getMessagesByUserId = async (userId) => {
       where: { userId },
       order: [["id", "ASC"]],
       limit: 10,
-      offset: count - 10,
+      offset: count > 10 ? count - 10 : 0,
       attributes: ["role", "content"],
     });
 
