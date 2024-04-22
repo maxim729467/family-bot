@@ -3,12 +3,12 @@ const { OPENAI_API_KEY } = process.env;
 const { getMessagesByUserId, addMessage } = require("./dbRequests");
 
 async function sendMessage(message, userInfo = {}) {
-  const { id: userId } = userInfo;
+  const { id: userId, username: userName } = userInfo;
   console.log(userInfo);
 
   try {
     const baseUrl = "https://api.openai.com/v1/chat/completions";
-    const messages = await getMessagesByUserId(userId);
+    const messages = await getMessagesByUserId(userId, userName);
     const newQuestion = { role: "user", content: message };
     messages.push(newQuestion);
 

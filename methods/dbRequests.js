@@ -1,6 +1,6 @@
 const db = require("../db");
 
-exports.getMessagesByUserId = async (userId) => {
+exports.getMessagesByUserId = async (userId, userName = null) => {
   const defaultSystemMessage = {
     role: "system",
     content: "You are a helpful assistant.",
@@ -10,6 +10,7 @@ exports.getMessagesByUserId = async (userId) => {
     if (!user) {
       await db.User.create({
         telegramId: userId,
+        userName,
       });
 
       const message = await db.Message.create({
