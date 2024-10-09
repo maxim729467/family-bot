@@ -1,22 +1,24 @@
 const { Telegraf } = require('telegraf');
 require('dotenv').config();
+
 const {
   scheduleForecastGreetingSend,
   scheduleFarewell,
 } = require('./methods/schedule');
+
 const { sendQuestion } = require('./methods/api');
 const { cutQuestion } = require('./methods/helpers');
 const { TELEGRAM_TOKEN, BOT_ID } = process.env;
 
 const bot = new Telegraf(TELEGRAM_TOKEN);
 
+scheduleForecastGreetingSend(bot);
+scheduleFarewell(bot);
+
 // bot.use((ctx, next) => {
 // console.log(ctx.update.message.text);
 // next();
 // })
-
-scheduleForecastGreetingSend(bot);
-scheduleFarewell(bot);
 
 // bot.help(ctx => ctx.reply('Help command'));
 // bot.settings(ctx => ctx.reply('Settings command'));
@@ -26,7 +28,9 @@ scheduleFarewell(bot);
 // })
 
 bot.on('message', async (ctx) => {
+  console.log(ctx);
   const { message } = ctx.update;
+  console.log({ message });
   const msgContent = message.text ? message.text.toLowerCase() : '';
 
   const isReplyToBot =
@@ -45,3 +49,7 @@ bot.on('message', async (ctx) => {
 
 // bot.start(ctx => ctx.replyWithMarkdownV2('Hey, this is inline bot'))
 // bot.on('inline_query', async ctx => {})
+
+bot.launch();
+process.once('SIGINT', () => bot.stop('SIGINT'));
+process.once('SIGTERM', () => bot.stop('SIGTERM'));
