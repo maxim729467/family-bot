@@ -6,7 +6,7 @@ const {
   generateGreeting,
 } = require('../methods/helpers');
 
-const { sendQuestion } = require('..api/methods/api');
+const { sendQuestion } = require('../methods/api');
 
 const { CHAT_ID } = process.env;
 
