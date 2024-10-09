@@ -1,13 +1,13 @@
 const axios = require('axios');
 const moment = require('moment');
-const { Configuration, OpenAIApi } = require('openai');
+// const { Configuration, OpenAIApi } = require('openai');
 const { OPENAI_API_KEY, RAPID_API_KEY } = process.env;
 
-const openAIConfiguration = new Configuration({
-  apiKey: OPENAI_API_KEY,
-});
+// const openAIConfiguration = new Configuration({
+//   apiKey: OPENAI_API_KEY,
+// });
 
-const openai = new OpenAIApi(openAIConfiguration);
+// const openai = new OpenAIApi(openAIConfiguration);
 
 exports.getForecastData = async (city) => {
   const URL = `https://forecast9.p.rapidapi.com/rapidapi/forecast/${city}/summary/`;
@@ -32,20 +32,31 @@ exports.getForecastData = async (city) => {
 
 exports.sendQuestion = async (question, ctx) => {
   try {
-    const { data } = await openai.createCompletion({
-      model: 'text-davinci-003',
-      prompt: question,
-      max_tokens: 2048,
-    });
+    const baseUrl = 'https://api.openai.com/v1/chat/completions';
+    const messages = [{ role: 'user', content: question }];
+    let answer = 'Мне нечего сказать на это.';
 
-    let answer = 'Мне нечего сказать на это...';
-    if (data.choices && data.choices.length) {
-      answer = data.choices[0].text;
+    const payload = {
+      model: 'gpt-3.5-turbo',
+      max_tokens: 2048,
+      messages,
+    };
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+      },
+    };
+
+    const response = await axios.post(baseUrl, payload, config);
+    if (response?.data?.choices?.length) {
+      answer = response.data.choices[0].message.content;
     }
 
     ctx.reply(answer);
   } catch (error) {
-    console.log('[OPENAI] ERROR \n', error);
-    ctx.reply('');
+    console.error('[OPENAI] ERROR \n', error);
+    ctx.reply('Open AI временно недоступен.');
   }
 };
