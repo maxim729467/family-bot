@@ -1,6 +1,9 @@
-const { Telegraf } = require("telegraf");
-require("dotenv").config();
-const { scheduleForecastSend, scheduleFarewell } = require("./methods/schedule");
+const { Telegraf } = require('telegraf');
+require('dotenv').config();
+const {
+  scheduleForecastGreetingSend,
+  scheduleFarewell,
+} = require('./methods/schedule');
 // const { sendQuestion } = require("./methods/api");
 // const { cutQuestion } = require("./methods/helpers");
 const { TELEGRAM_TOKEN, BOT_ID } = process.env;
@@ -12,7 +15,7 @@ const bot = new Telegraf(TELEGRAM_TOKEN);
 // next();
 // })
 
-scheduleForecastSend(bot);
+scheduleForecastGreetingSend(bot);
 scheduleFarewell(bot);
 
 // bot.help(ctx => ctx.reply('Help command'));
