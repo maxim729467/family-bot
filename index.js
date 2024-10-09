@@ -30,7 +30,6 @@ scheduleFarewell(bot);
 bot.on('message', async (ctx) => {
   console.log(ctx);
   const { message } = ctx.update;
-  console.log({ message });
   const msgContent = message.text ? message.text.toLowerCase() : '';
 
   const isReplyToBot =
@@ -43,7 +42,8 @@ bot.on('message', async (ctx) => {
 
   if (isReplyToBot || isBotMentioned) {
     const question = isBotMentioned ? cutQuestion(msgContent) : msgContent;
-    await sendQuestion(question, ctx);
+    const answer = await sendQuestion(question);
+    ctx.reply(answer);
   }
 });
 

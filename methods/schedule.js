@@ -6,6 +6,8 @@ const {
   generateGreeting,
 } = require('../methods/helpers');
 
+const { sendQuestion } = require('..api/methods/api');
+
 const { CHAT_ID } = process.env;
 
 exports.scheduleForecastGreetingSend = (bot) => {
@@ -14,7 +16,12 @@ exports.scheduleForecastGreetingSend = (bot) => {
     console.log('[CRON] greeting/forecast ::: running scheduled task');
 
     try {
-      bot.telegram.sendMessage(CHAT_ID, generateGreeting());
+      // const greeting = generateGreeting();
+      const greeting = await sendQuestion(
+        'Пожелай всем отличного дня и настроения оригинальным образом.'
+      );
+
+      bot.telegram.sendMessage(CHAT_ID, greeting);
       await sendForecast('Odessa', bot, CHAT_ID);
       await sendForecast('Chisinau', bot, CHAT_ID);
     } catch (error) {
@@ -25,8 +32,12 @@ exports.scheduleForecastGreetingSend = (bot) => {
 
 exports.scheduleFarewell = (bot) => {
   console.log('[CRON] ::: scheduling farewell');
-  cron.schedule('0 22 * * *', () => {
+  cron.schedule('0 22 * * *', async () => {
     console.log('[CRON] farewell ::: running scheduled task');
-    bot.telegram.sendMessage(CHAT_ID, generateFarewell());
+    // const farewell = generateFarewell();
+    const farewell = await sendQuestion(
+      'Пожелай всем спокойной ночи и прекрасных снов оригинальным образом.'
+    );
+    bot.telegram.sendMessage(CHAT_ID, farewell);
   });
 };

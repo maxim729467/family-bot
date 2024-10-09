@@ -1,13 +1,6 @@
 const axios = require('axios');
 const moment = require('moment');
-// const { Configuration, OpenAIApi } = require('openai');
 const { OPENAI_API_KEY, RAPID_API_KEY } = process.env;
-
-// const openAIConfiguration = new Configuration({
-//   apiKey: OPENAI_API_KEY,
-// });
-
-// const openai = new OpenAIApi(openAIConfiguration);
 
 exports.getForecastData = async (city) => {
   const URL = `https://forecast9.p.rapidapi.com/rapidapi/forecast/${city}/summary/`;
@@ -30,11 +23,11 @@ exports.getForecastData = async (city) => {
   }
 };
 
-exports.sendQuestion = async (question, ctx) => {
+exports.sendQuestion = async (question) => {
   try {
     const baseUrl = 'https://api.openai.com/v1/chat/completions';
     const messages = [{ role: 'user', content: question }];
-    let answer = 'Мне нечего сказать на это.';
+    let answer = 'Я - рюкзак, я - рюкзак 🎒';
 
     const payload = {
       model: 'gpt-3.5-turbo',
@@ -54,9 +47,9 @@ exports.sendQuestion = async (question, ctx) => {
       answer = response.data.choices[0].message.content;
     }
 
-    ctx.reply(answer);
+    return answer;
   } catch (error) {
     console.error('[OPENAI] ERROR \n', error);
-    ctx.reply('Open AI временно недоступен.');
+    return 'Open AI временно недоступен.';
   }
 };
