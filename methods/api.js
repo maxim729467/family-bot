@@ -1,23 +1,18 @@
 const axios = require('axios');
-const moment = require('moment');
 const { OPENAI_API_KEY, RAPID_API_KEY } = process.env;
 
 exports.getForecastData = async (city) => {
-  const URL = `https://forecast9.p.rapidapi.com/rapidapi/forecast/${city}/summary/`;
+  const url = `https://weatherapi-com.p.rapidapi.com/forecast.json?q=${city}&days=1&lang=ru`;
   const options = {
     headers: {
       'X-RapidAPI-Key': RAPID_API_KEY,
-      'X-RapidAPI-Host': 'forecast9.p.rapidapi.com',
+      'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com',
     },
   };
 
   try {
-    const res = await axios.get(URL, options);
-    const currentDate = moment().format('YYYY-MM-DD');
-    const todayForecastData = res.data.forecast.items.find(
-      (item) => item.date === currentDate
-    );
-    return todayForecastData;
+    const res = await axios.get(url, options);
+    return res.data;
   } catch (e) {
     throw new Error(e);
   }

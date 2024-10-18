@@ -1,34 +1,12 @@
-const weatherStates = require('../templates/weatherStates');
-const greetings = require('../templates/greetings');
-const farewells = require('../templates/firewells');
 const { getForecastData } = require('./api');
 
-const getRandomMessage = (messages) => {
-  const randomIndex = Math.floor(Math.random() * messages.length);
-  return messages[randomIndex];
-};
-
-exports.getRandomMessage = getRandomMessage;
-
-exports.sendForecast = async (city, bot, chatId) => {
+exports.getForecast = async (city) => {
   const data = await getForecastData(city);
-  const info = getForecastInfo(data);
-  const markup = generateForecastMarkup(info, city);
-  bot.telegram.sendMessage(chatId, markup);
+  const markup = generateForecastMarkup(data, city);
+  return markup;
 };
 
-function getForecastInfo(data) {
-  const stateIdx = data.weather.state;
-  const weatherData = {
-    state: Number.isInteger(stateIdx) ? weatherStates[stateIdx] : null,
-    temperature: `${data.temperature.min}° ― ${data.temperature.max}°`,
-    wind: `${data.wind.min} ― ${data.wind.max} км/ч`,
-    sunset: data.astronomy.sunset.slice(11, 19),
-  };
-  return weatherData;
-}
-
-function generateForecastMarkup(forecast, city) {
+function generateForecastMarkup(data, city) {
   let cityName;
 
   switch (city) {
@@ -36,31 +14,36 @@ function generateForecastMarkup(forecast, city) {
       cityName = 'Кишиневе';
       break;
 
-    default:
+    case 'Odesa':
       cityName = 'Одессе';
+      break;
+
+    default:
       break;
   }
 
+  if (!data.forecast || !data.forecast.forecastday.length) {
+    throw new Error('Unknown weather info');
+  }
+
+  const {
+    day: {
+      mintemp_c,
+      maxtemp_c,
+      condition: { text },
+      maxwind_kph,
+    },
+    astro: { sunset },
+  } = data.forecast.forecastday[0];
+
   return `
 Прогноз погоды в ${cityName}: 
-${forecast.state ? forecast.state : ''}
+${text}
 
-🌡 Температура воздуха: ${forecast.temperature}
-💨 Скорость ветра: ${forecast.wind}
-🔆 Время заката: ${forecast.sunset}
+🌡 Температура воздуха: ${Math.round(mintemp_c)}° - ${Math.round(maxtemp_c)}°
+💨 Максимальная скорость ветра: ${Math.round(maxwind_kph)} км/ч
+🔆 Время заката: ${sunset.slice(0, sunset.length - 3)}
 `;
 }
-
-exports.generateGreeting = () => {
-  return `
-${getRandomMessage(greetings)}
-`;
-};
-
-exports.generateFarewell = () => {
-  return `
-${getRandomMessage(farewells)}
-`;
-};
 
 exports.cutQuestion = (str) => str.split(' ').slice(1).join(' ').trim();

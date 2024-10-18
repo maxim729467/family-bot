@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const {
   scheduleForecastGreetingSend,
-  scheduleFarewell,
+  scheduleFarewellSend,
 } = require('./methods/schedule');
 
 const { sendQuestion } = require('./methods/api');
@@ -13,7 +13,7 @@ const { TELEGRAM_TOKEN, BOT_ID } = process.env;
 const bot = new Telegraf(TELEGRAM_TOKEN);
 
 scheduleForecastGreetingSend(bot);
-scheduleFarewell(bot);
+scheduleFarewellSend(bot);
 
 // bot.use((ctx, next) => {
 // console.log(ctx.update.message.text);
@@ -28,7 +28,7 @@ scheduleFarewell(bot);
 // })
 
 bot.on('message', async (ctx) => {
-  console.log(ctx);
+  // console.log(ctx);
   const { message } = ctx.update;
   const msgContent = message.text ? message.text.toLowerCase() : '';
 
@@ -39,6 +39,8 @@ bot.on('message', async (ctx) => {
     cutQuestion(msgContent).length &&
     msgContent.startsWith(BOT_ID) &&
     !msgContent.includes('/start');
+
+  console.log({ message, msgContent, isReplyToBot, isBotMentioned });
 
   if (isReplyToBot || isBotMentioned) {
     const question = isBotMentioned ? cutQuestion(msgContent) : msgContent;
