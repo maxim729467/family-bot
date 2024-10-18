@@ -1,4 +1,4 @@
-const { getForecastData } = require('./api');
+const { getForecastData, sendQuestion } = require('./api');
 
 exports.getForecast = async (city) => {
   const data = await getForecastData(city);
@@ -46,4 +46,23 @@ ${text}
 `;
 }
 
-exports.cutQuestion = (str) => str.split(' ').slice(1).join(' ').trim();
+const cutQuestion = (str) => str.split(' ').slice(1).join(' ').trim();
+
+exports.handleMessage = async (ctx) => {
+  const { message } = ctx.update;
+  const msgContent = message.text ? message.text.toLowerCase() : '';
+
+  const isReplyToBot =
+    message.reply_to_message && message.reply_to_message.from.is_bot;
+
+  const isBotMentioned =
+    cutQuestion(msgContent).length &&
+    msgContent.startsWith(process.env.BOT_ID) &&
+    !msgContent.includes('/start');
+
+  if (isReplyToBot || isBotMentioned) {
+    const question = isBotMentioned ? cutQuestion(msgContent) : msgContent;
+    const answer = await sendQuestion(question);
+    ctx.reply(answer);
+  }
+};

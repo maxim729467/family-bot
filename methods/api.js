@@ -18,7 +18,7 @@ exports.getForecastData = async (city) => {
   }
 };
 
-exports.sendQuestion = async (question) => {
+exports.sendQuestion = async (question, options = { ignoreError: true }) => {
   try {
     const baseUrl = 'https://api.openai.com/v1/chat/completions';
     const messages = [{ role: 'user', content: question }];
@@ -45,6 +45,7 @@ exports.sendQuestion = async (question) => {
     return answer;
   } catch (error) {
     console.error('[OPENAI] ERROR \n', error);
+    if (!options.ignoreError) throw new Error('Open AI временно недоступен.');
     return 'Open AI временно недоступен.';
   }
 };
