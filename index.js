@@ -28,7 +28,6 @@ scheduleFarewellSend(bot);
 // })
 
 bot.on('message', async (ctx) => {
-  // console.log(ctx);
   const { message } = ctx.update;
   const msgContent = message.text ? message.text.toLowerCase() : '';
 
@@ -39,8 +38,6 @@ bot.on('message', async (ctx) => {
     cutQuestion(msgContent).length &&
     msgContent.startsWith(BOT_ID) &&
     !msgContent.includes('/start');
-
-  console.log({ message, msgContent, isReplyToBot, isBotMentioned });
 
   if (isReplyToBot || isBotMentioned) {
     const question = isBotMentioned ? cutQuestion(msgContent) : msgContent;

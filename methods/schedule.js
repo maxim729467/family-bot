@@ -23,11 +23,11 @@ exports.scheduleForecastGreetingSend = (bot) => {
           const forecast = await getForecast(city, bot, CHAT_ID);
           bot.telegram.sendMessage(CHAT_ID, forecast);
         } catch (error) {
-          console.log('[FORECAST] ::: ERROR \n', error);
+          console.log(`[FORECAST] ::: CITY ==> ${city}, ERROR ==>`, error);
         }
       });
     } catch (error) {
-      console.log('[SCHEDULE] ::: TASK ERROR \n', error);
+      console.log('[SCHEDULE] ::: TASK ERROR ==> ', error);
     }
   });
 };
