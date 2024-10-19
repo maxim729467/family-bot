@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const {
   scheduleForecastSend,
-  scheduleAffirmationSend,
+
   scheduleGreetingSend,
   scheduleFarewellSend,
 } = require('./methods/schedule');
@@ -13,10 +13,9 @@ const { TELEGRAM_TOKEN } = process.env;
 
 const bot = new Telegraf(TELEGRAM_TOKEN);
 
-scheduleFarewellSend(bot);
 scheduleGreetingSend(bot);
+scheduleFarewellSend(bot);
 scheduleForecastSend(bot);
-scheduleAffirmationSend(bot);
 
 // bot.use((ctx, next) => {
 // console.log(ctx.update.message.text);

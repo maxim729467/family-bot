@@ -21,6 +21,22 @@ exports.scheduleGreetingSend = (bot) => {
     } catch (error) {
       console.log('[SCHEDULE] ::: GREETING ERROR ==> ', error);
     }
+
+    try {
+      let affirmation = await sendQuestion(
+        'Напиши одну аффирмацию в виде слогана на день',
+        { ignoreError: false }
+      );
+
+      affirmation = `
+      ❗️❗️❗️
+      ${affirmation}
+      `;
+
+      bot.telegram.sendMessage(CHAT_ID, affirmation);
+    } catch (error) {
+      console.log('[SCHEDULE] ::: AFFIRMATION ERROR ==> ', error);
+    }
   });
 };
 
@@ -37,26 +53,6 @@ exports.scheduleForecastSend = (bot) => {
         console.log(`[FORECAST] ::: CITY ==> ${city}, ERROR ==>`, error);
       }
     });
-  });
-};
-
-exports.scheduleAffirmationSend = (bot) => {
-  console.log('[CRON] ::: scheduling affirmation');
-  cron.schedule('0 8 * * *', async () => {
-    console.log('[CRON] greeting/forecast ::: running scheduled task');
-
-    try {
-      let affirmation = await sendQuestion(
-        'Напиши одну аффирмацию в виде слогана на день',
-        { ignoreError: false }
-      );
-
-      affirmation = `❗️ ${affirmation}`;
-
-      bot.telegram.sendMessage(CHAT_ID, affirmation);
-    } catch (error) {
-      console.log('[SCHEDULE] ::: AFFIRMATION ERROR ==> ', error);
-    }
   });
 };
 
