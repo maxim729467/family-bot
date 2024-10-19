@@ -7,9 +7,11 @@ const { CHAT_ID } = process.env;
 const CITIES = ['Odesa', 'Chisinau'];
 
 exports.scheduleGreetingSend = (bot) => {
-  console.log('[CRON] ::: scheduling greeting');
+  console.log('[CRON] ::: scheduling greeting/affirmation/forecast');
   cron.schedule('0 8 * * *', async () => {
-    console.log('[CRON] greeting ::: running scheduled task');
+    console.log(
+      '[CRON] greeting/affirmation/forecast ::: running scheduled task'
+    );
 
     try {
       const greeting = await sendQuestion(
@@ -37,13 +39,6 @@ exports.scheduleGreetingSend = (bot) => {
     } catch (error) {
       console.log('[SCHEDULE] ::: AFFIRMATION ERROR ==> ', error);
     }
-  });
-};
-
-exports.scheduleForecastSend = (bot) => {
-  console.log('[CRON] ::: scheduling forecast');
-  cron.schedule('0 8 * * *', async () => {
-    console.log('[CRON] forecast ::: running scheduled task');
 
     CITIES.forEach(async (city) => {
       try {
