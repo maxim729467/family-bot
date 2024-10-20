@@ -1,5 +1,6 @@
 import axios from 'axios';
-const { OPENAI_API_KEY, RAPID_API_KEY } = process.env;
+
+import config from '../constants';
 
 interface ForecastDay {
   day: {
@@ -21,7 +22,7 @@ export const getForecastData = async (city: string): Promise<ForecastData> => {
   const url = `https://weatherapi-com.p.rapidapi.com/forecast.json?q=${city}&days=1&lang=ru`;
   const options = {
     headers: {
-      'X-RapidAPI-Key': RAPID_API_KEY,
+      'X-RapidAPI-Key': config.RAPID_API_KEY,
       'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com',
     },
   };
@@ -47,14 +48,14 @@ export const sendQuestion = async (question = 'string', options = { ignoreError:
       messages,
     };
 
-    const config = {
+    const conf = {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
+        Authorization: `Bearer ${config.OPENAI_API_KEY}`,
       },
     };
 
-    const response = await axios.post(baseUrl, payload, config);
+    const response = await axios.post(baseUrl, payload, conf);
     if (response?.data?.choices?.length) {
       answer = response.data.choices[0].message.content;
     }

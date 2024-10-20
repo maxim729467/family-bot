@@ -1,4 +1,5 @@
 import cron from 'node-cron';
+
 import { getForecastData, ForecastData } from './api';
 import config from '../constants';
 
