@@ -28,8 +28,8 @@ class Bot {
 
     console.log('[TG_BOT] launched');
     this.setEventHandlers();
-    schedule('0 8 * * *', this.scheduleGreetingSend);
-    schedule('0 22 * * *', this.scheduleFarewellSend);
+    schedule('0 8 * * *', this.sendGreeting);
+    schedule('0 22 * * *', this.sendFarewell);
     this.bot.launch();
   }
 
@@ -70,7 +70,7 @@ class Bot {
     });
   }
 
-  private scheduleGreetingSend = async () => {
+  private sendGreeting = async () => {
     console.log('[CRON] greeting/affirmation/forecast ::: running scheduled task');
 
     try {
@@ -103,7 +103,7 @@ class Bot {
     });
   };
 
-  scheduleFarewellSend = async () => {
+  sendFarewell = async () => {
     console.log('[CRON] farewell ::: running scheduled task');
 
     try {
