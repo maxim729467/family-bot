@@ -1,7 +1,23 @@
-const axios = require('axios');
+import axios from 'axios';
 const { OPENAI_API_KEY, RAPID_API_KEY } = process.env;
 
-exports.getForecastData = async (city) => {
+interface ForecastDay {
+  day: {
+    mintemp_c: number;
+    maxtemp_c: number;
+    condition: { text: string };
+    maxwind_kph: number;
+  };
+  astro: { sunset: string };
+}
+
+export interface ForecastData {
+  forecast: {
+    forecastday: ForecastDay[];
+  };
+}
+
+export const getForecastData = async (city: string): Promise<ForecastData> => {
   const url = `https://weatherapi-com.p.rapidapi.com/forecast.json?q=${city}&days=1&lang=ru`;
   const options = {
     headers: {
@@ -13,12 +29,13 @@ exports.getForecastData = async (city) => {
   try {
     const res = await axios.get(url, options);
     return res.data;
-  } catch (e) {
-    throw new Error(e);
+  } catch (error) {
+    console.log(error);
+    throw new Error('Forecast error');
   }
 };
 
-exports.sendQuestion = async (question, options = { ignoreError: true }) => {
+export const sendQuestion = async (question = 'string', options = { ignoreError: true }) => {
   try {
     const baseUrl = 'https://api.openai.com/v1/chat/completions';
     const messages = [{ role: 'user', content: question }];
