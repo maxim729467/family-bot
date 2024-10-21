@@ -86,7 +86,7 @@ class Bot {
       console.log('[SCHEDULE] ::: AFFIRMATION ERROR ==> ', error);
     }
 
-    Object.keys(config.LOCATIONS).forEach(async (city) => {
+    Object.values(config.LOCATIONS).forEach(async (city) => {
       try {
         const forecast = await getForecast(city);
         this.bot.telegram.sendMessage(config.CHAT_ID, forecast);

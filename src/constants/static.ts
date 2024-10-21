@@ -1,7 +1,7 @@
-export enum LOCATIONS {
-  'ODESSA' = 'Odesa',
-  'CHISINAU' = 'Chisinau',
-}
+const LOCATIONS = {
+  ODESSA: 'Odesa',
+  CHISINAU: 'Chisinau',
+};
 
 export default {
   LOCATIONS,

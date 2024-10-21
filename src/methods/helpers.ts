@@ -1,5 +1,3 @@
-'node-cron';
-
 import { getForecastData, ForecastData } from './api';
 import config from '../constants';
 
