@@ -1,28 +1,29 @@
 {
-  "name": "telegram-bot",
-  "version": "1.0.0",
+  "name": "rayan",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "prestart": "tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@google-cloud/translate": "^7.0.5",
     "axios": "^1.2.2",
     "dotenv": "^16.0.3",
-    "express": "^4.18.2",
     "moment": "^2.29.4",
-    "mysql2": "^3.3.3",
     "node-cron": "^3.0.2",
     "openai": "^3.1.0",
-    "sequelize": "^6.32.0",
+    "redis": "^4.7.0",
     "telegraf": "^4.11.2"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/node": "^22.7.7",
+    "@types/node-cron": "^3.0.11",
     "nodemon": "^2.0.20"
   }
 }
