@@ -18,7 +18,7 @@ export interface ForecastData {
   };
 }
 
-export const getForecastData = async (city: string): Promise<ForecastData> => {
+export const getForecastData = async (city: string) => {
   const url = `https://weatherapi-com.p.rapidapi.com/forecast.json?q=${city}&days=1&lang=ru`;
   const options = {
     headers: {
@@ -28,7 +28,7 @@ export const getForecastData = async (city: string): Promise<ForecastData> => {
   };
 
   try {
-    const res = await axios.get(url, options);
+    const res = await axios.get<ForecastData>(url, options);
     return res.data;
   } catch (error) {
     console.log(error);
