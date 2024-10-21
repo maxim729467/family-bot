@@ -1,11 +1,7 @@
-import cron from 'node-cron';
+'node-cron';
 
 import { getForecastData, ForecastData } from './api';
 import config from '../constants';
-
-export const schedule = (time: string, callback: () => {}) => {
-  cron.schedule(time, callback);
-};
 
 export const getForecast = async (city: string) => {
   const data = await getForecastData(city);

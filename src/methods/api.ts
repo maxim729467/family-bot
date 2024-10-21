@@ -36,6 +36,16 @@ export const getForecastData = async (city: string): Promise<ForecastData> => {
   }
 };
 
+interface Choice {
+  message: {
+    content: string;
+  };
+}
+
+interface Completion {
+  choices: Choice[];
+}
+
 export const sendQuestion = async (question = 'string', options = { ignoreError: true }) => {
   try {
     const baseUrl = 'https://api.openai.com/v1/chat/completions';
@@ -55,9 +65,11 @@ export const sendQuestion = async (question = 'string', options = { ignoreError:
       },
     };
 
-    const response = await axios.post(baseUrl, payload, conf);
+    const response = await axios.post<Completion>(baseUrl, payload, conf);
+
     if (response?.data?.choices?.length) {
-      answer = response.data.choices[0].message.content;
+      const [choice] = response.data.choices;
+      answer = choice.message.content;
     }
 
     return answer;

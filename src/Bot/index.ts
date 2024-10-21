@@ -1,31 +1,29 @@
 import { Telegraf, Context, NarrowedContext } from 'telegraf';
+import { schedule } from 'node-cron';
 import { Message, Update } from 'telegraf/typings/core/types/typegram';
 
 import { sendQuestion } from '../methods/api';
-import { schedule, getForecast } from '../methods/helpers';
+import { getForecast } from '../methods/helpers';
 import config from '../constants';
 
 class Bot {
-  static #instance: Bot;
+  private static instance: Bot;
   private bot: Telegraf<Context<Update>>;
-  private initialized = false;
 
-  private constructor() {
-    this.bot = new Telegraf(config.TELEGRAM_TOKEN);
+  private constructor(telegramToken: string) {
+    this.bot = new Telegraf(telegramToken);
+    this.init();
   }
 
-  public static get instance(): Bot {
-    if (!Bot.#instance) {
-      Bot.#instance = new Bot();
+  public static getInstance(telegramToken: string): Bot {
+    if (!Bot.instance) {
+      Bot.instance = new Bot(telegramToken);
     }
 
-    return Bot.#instance;
+    return Bot.instance;
   }
 
   init() {
-    if (this.initialized) return;
-    this.initialized = true;
-
     console.log('[TG_BOT] launched');
     this.setEventHandlers();
     schedule('0 8 * * *', this.sendGreeting);
@@ -82,12 +80,7 @@ class Bot {
 
     try {
       let affirmation = await sendQuestion('Напиши одну аффирмацию в виде слогана на день', { ignoreError: false });
-
-      affirmation = `
-      ❗️❗️❗️
-      ${affirmation}
-      `;
-
+      affirmation = `\n❗️❗️❗️\n${affirmation}`;
       this.bot.telegram.sendMessage(config.CHAT_ID, affirmation);
     } catch (error) {
       console.log('[SCHEDULE] ::: AFFIRMATION ERROR ==> ', error);

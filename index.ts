@@ -1,7 +1,4 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
+import config from './src/constants';
 import Bot from './src/Bot';
 
-const bot = Bot.instance;
-bot.init();
+Bot.getInstance(config.TELEGRAM_TOKEN);
