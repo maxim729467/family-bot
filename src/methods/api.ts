@@ -46,7 +46,11 @@ interface Completion {
   choices: Choice[];
 }
 
-export const sendQuestion = async (question = 'string', options = { ignoreError: true }) => {
+interface Opts {
+  ignoreError?: boolean;
+}
+
+export const sendQuestion = async (question = 'string', options: Opts = { ignoreError: true }) => {
   try {
     const baseUrl = 'https://api.openai.com/v1/chat/completions';
     const messages = [{ role: 'user', content: question }];
