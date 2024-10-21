@@ -1,5 +1,4 @@
 export default interface User {
-  telegramId: string;
-  userName: string;
+  id: string;
   createdAt: number;
 }

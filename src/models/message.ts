@@ -1,6 +1,7 @@
-enum Role {
-  'user',
-  'assistant',
+export enum Role {
+  USER = 'user',
+  ASSISTANT = 'assistant',
+  SYSTEM = 'system',
 }
 
 export default interface Message {

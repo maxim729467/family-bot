@@ -1,14 +1,28 @@
-import redis, { RedisClientType } from 'redis';
+import { RedisClientType, createClient } from 'redis';
 import moment from 'moment';
 
 import { User, Message } from '../../models';
+import { Role } from '../../models/message';
+
+interface WithCreatedAt {
+  createdAt: number;
+}
 
 class MemoryDB {
   private static instance: MemoryDB;
   private client: RedisClientType;
 
   private constructor() {
-    this.client = redis.createClient();
+    this.client = createClient();
+    this.client.connect();
+
+    this.client.on('connect', () => {
+      console.log('[REDIS] Connected');
+    });
+
+    this.client.on('error', (err) => {
+      console.log('[REDIS] Connection Error --> ', err);
+    });
   }
 
   static getInstance() {
@@ -20,82 +34,76 @@ class MemoryDB {
   }
 
   addMessage = async (message: Message) => {
+    const messagesKey = `messages-${message.userId}`;
+    const messages = await this.getDataArray<Message>(messagesKey);
+    messages.push(message);
+    await this.setDataArray(messagesKey, messages);
+  };
+
+  private getDataArray = async <T extends WithCreatedAt>(key: string): Promise<T[]> => {
     try {
-      await this.client.set('message', '123'); // SET UP
-      // await db.Message.create({
-      //   ...message,
-      //   createdAt: new Date(),
-      // });
-    } catch (error) {
-      console.log(error);
+      const cachedData = await this.client.get(key);
+      if (!cachedData) return [];
+      const data: T[] = JSON.parse(cachedData);
+
+      return data.sort((a, b) => a.createdAt - b.createdAt);
+    } catch (_) {
+      return [];
     }
   };
 
-  getMessagesByUserId = async (userId: number, userName: string) => {
-    const defaultSystemMessage = {
-      role: 'system',
-      content: 'You are a helpful assistant.',
-    };
+  private setDataArray = async <T>(key: string, data: T[]): Promise<void> => {
     try {
-      const user = await this.client.get(''); // SET UP
-
-      if (!user) {
-        await this.client.set('user', '123'); // SET UP
-
-        // await db.User.create({
-        //   telegramId: userId,
-        //   userName,
-        // });
-
-        const message = await this.client.set('message', '123'); // SET UP
-
-        // const message = await db.Message.create({
-        //   ...defaultSystemMessage,
-        //   userId,
-        //   createdAt: new Date(),
-        // });
-
-        return [{ role: message.role, content: message.content }];
-      }
-
-      const count = await this.client.get('messages'); // SET UP
-
-      //   const count = await db.Message.count({ where: { userId: userId } });
-
-      const messages = await this.client.get('messages'); // SET UP
-
-      //   const messages = await db.Message.findAll({
-      //     where: { userId },
-      //     order: [['id', 'ASC']],
-      //     limit: 10,
-      //     offset: count > 10 ? count - 10 : 0,
-      //     attributes: ['role', 'content'],
-      //   });
-
-      return messages;
-    } catch (error) {
-      console.log(error);
-      return [defaultSystemMessage];
+      await this.client.set(key, JSON.stringify(data));
+    } catch (_) {
+      //
     }
+  };
+
+  getMessagesByUserId = async (userId: string): Promise<Message[]> => {
+    const defaultSystemMessage = {
+      role: Role.SYSTEM,
+      content: 'You are a helpful assistant.',
+      userId,
+      createdAt: moment().valueOf(),
+    };
+
+    const messagesKey = `messages-${userId}`;
+
+    const users = await this.getDataArray<User>('users');
+    const user = users.find((u) => u.id === userId);
+
+    if (!user) {
+      users.push({ id: userId, createdAt: moment().valueOf() });
+      this.setDataArray('users', users);
+
+      const messages = [defaultSystemMessage];
+      await this.setDataArray(messagesKey, messages);
+      return messages;
+    }
+
+    const messages = await this.getDataArray<Message>(messagesKey);
+    const count = messages.length;
+
+    if (count >= 10) {
+      const newestMessages = messages.slice(2);
+      await this.setDataArray(messagesKey, newestMessages);
+      return newestMessages;
+    }
+
+    return messages;
   };
 
   cleanUpOldData = async () => {
-    const threeDaysAgo = moment().subtract(3, 'days').valueOf();
+    const expTime = moment().subtract(3, 'days').valueOf();
+    const users = await this.getDataArray<User>('users');
 
-    try {
-      console.log(new Date());
-      await this.client.del('message'); // SET UP
-
-      // await db.Message.destroy({
-      //   where: {
-      //     createdAt: {
-      //       [Op.lt]: threeDaysAgo,
-      //     },
-      //   },
-      // });
-    } catch (error) {
-      console.log('[CRON] DELETING OLD MESSAGES ::: ERROR ---> ', error);
-    }
+    users.forEach(async (user) => {
+      const messagesKey = `messages-${user.id}`;
+      const messages = await this.getDataArray<Message>(messagesKey);
+      const filteredMessages = messages.filter((msg) => msg.createdAt >= expTime);
+      await this.setDataArray(messagesKey, filteredMessages);
+    });
   };
 }
 
