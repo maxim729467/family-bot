@@ -2,34 +2,67 @@ import axios from 'axios';
 
 import config from '../constants';
 
+interface Hour {
+  time: string;
+  temp_c: number;
+  is_day: boolean;
+  condition: {
+    text: string;
+  };
+  wind_kph: string;
+  humidity: number;
+  feelslike_c: number;
+}
+
 interface ForecastDay {
+  date: string;
   day: {
-    mintemp_c: number;
     maxtemp_c: number;
-    condition: { text: string };
+    mintemp_c: number;
     maxwind_kph: number;
+    avghumidity: number;
+    condition: {
+      text: string;
+    };
   };
   astro: { sunset: string };
+  hour: Hour[];
 }
 
 export interface ForecastData {
+  location: {
+    name: string;
+    country: string;
+  };
+  current: {
+    temp_c: number;
+    wind_kph: number;
+    humidity: number;
+    condition: { text: string };
+    maxwind_kph: number;
+  };
   forecast: {
     forecastday: ForecastDay[];
   };
 }
 
-export const getForecastData = async (city: string) => {
-  const url = `https://weatherapi-com.p.rapidapi.com/forecast.json?q=${city}&days=1&lang=ru`;
-  const options = {
-    headers: {
-      'X-RapidAPI-Key': config.RAPID_API_KEY,
-      'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com',
-    },
-  };
+const weatherApiClient = axios.create({
+  baseURL: 'http://api.weatherapi.com/v1',
+  params: {
+    key: config.WEATHER_API_KEY,
+  },
+});
 
+export const getForecastData = async (city: string) => {
   try {
-    const res = await axios.get<ForecastData>(url, options);
-    return res.data;
+    const { data } = await weatherApiClient.get<ForecastData>('/forecast.json', {
+      params: {
+        lang: 'ru',
+        q: city,
+        days: 1,
+      },
+    });
+    return data;
   } catch (error) {
     console.log(error);
     throw new Error('Forecast error');

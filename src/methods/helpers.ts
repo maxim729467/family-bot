@@ -33,6 +33,7 @@ const generateForecastMarkup = (data: ForecastData, city: string) => {
       maxtemp_c,
       condition: { text },
       maxwind_kph,
+      avghumidity,
     },
     astro: { sunset },
   } = data.forecast.forecastday[0];
@@ -42,7 +43,8 @@ const generateForecastMarkup = (data: ForecastData, city: string) => {
 ${text}
 
 🌡 Температура воздуха: ${Math.round(mintemp_c)}° - ${Math.round(maxtemp_c)}°
-💨 Максимальная скорость ветра: ${Math.round(maxwind_kph)} км/ч
+💨 Максимальная скорость ветра: ${Math.round(maxwind_kph)} км
+🌀 Средняя влажность: ${avghumidity}%
 🔆 Время заката: ${sunset.slice(0, sunset.length - 3)}
 `;
 };
